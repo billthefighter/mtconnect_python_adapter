@@ -9785,6 +9785,12 @@ class ComponentStreamType:
         },
     )
 
+    def __str__(self):
+        try:
+            return self.component
+        except:
+            return f"{self.__class__}"
+
 
 @dataclass
 class DeviceStreamType:
