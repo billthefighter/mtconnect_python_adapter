@@ -1801,8 +1801,6 @@ click = {version = ">=5.0", optional = true, markers = "extra == \"cli\""}
 click-default-group = {version = ">=1.2", optional = true, markers = "extra == \"cli\""}
 docformatter = {version = ">=1.7.2", optional = true, markers = "extra == \"cli\""}
 jinja2 = {version = ">=2.10", optional = true, markers = "extra == \"cli\""}
-lxml = {version = ">=4.5.0", optional = true, markers = "extra == \"lxml\""}
-requests = {version = "*", optional = true, markers = "extra == \"soap\""}
 ruff = {version = ">=0.3.0", optional = true, markers = "extra == \"cli\""}
 toposort = {version = ">=1.5", optional = true, markers = "extra == \"cli\""}
 typing-extensions = ">=4.7.0"
@@ -1817,4 +1815,4 @@ test = ["pre-commit", "pytest", "pytest-benchmark", "pytest-cov"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "a8926b082a706b5d54d967cb3ccce3509a6b1af95e21c6f2ee21c60585c30399"
+content-hash = "393a71c99d4373db7b7db07bc14209c02c9136e29126ff2a9b1f7d826772fa56"

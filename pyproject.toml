@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "XML interface and python class for reading MTConnect XML files"
 authors = ["Lucas Whipple <lucas.whipple@gmail.com>"]
 readme = "README.md"
-packages = [{include = "*", from="src"}, {include = "generator", from= "src"}]
+packages = [{include = "*", from="src"}]
 
 
 [tool.black]
@@ -40,7 +40,7 @@ directory = "coverage/coverage_html_report"
 python = "^3.12"
 requests = "^2.32.3"
 lxml = "^5.3.0"
-xsdata = {version = "^24.9", extras = ["cli","lxml","soap"]}
+
 
 [tool.poetry.group.dev.dependencies]
 black = "*"
@@ -50,6 +50,7 @@ pydot = "*"
 imageio = "*"
 ipympl = "*"
 snakeviz = "*"
+xsdata = {version = "^24.9", extras = ['cli']}
 
 
 [tool.poetry.group.test.dependencies]
