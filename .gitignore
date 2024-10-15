@@ -6,3 +6,4 @@
 /mtconnect.py
 /schema
 /sh
+*pycache*
