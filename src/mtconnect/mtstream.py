@@ -1,4 +1,14 @@
+from mtconnect.schema import mtconnect_stream_schema_1_7
+from xsdata.formats.dataclass.parsers import XmlParser
+from mtconnect.schema.mtconnect_stream_schema_1_7.mtconnect_streams_1_7 import MtconnectStreams, EventsType
+from mtconnect.mtstream import MTStream
+
+
 class MTStream:
+    """
+    Class to handle MT data streams
+    """
+
     MTstream_parser = XmlParser()
 
     def __init__(self, xml_filepath):
