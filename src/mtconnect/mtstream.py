@@ -1,8 +1,3 @@
-from mtconnect.schema import mtconnect_stream_schema_1_7
-from xsdata.formats.dataclass.parsers import XmlParser
-from mtconnect.schema.mtconnect_stream_schema_1_7.mtconnect_streams_1_7 import MtconnectStreams, EventsType
-
-
 class MTStream:
     MTstream_parser = XmlParser()
 
@@ -26,11 +21,3 @@ class MTStream:
     def return_events(self) -> EventsType | None:
         pathobj = self.find_component_by_component_attribute("Path")
         return pathobj.events
-
-
-if __name__ == "__main__":
-    fp = "test/test_data/current.xml"
-    test: MTStream = MTStream(fp)
-    test.return_events()
-    print(test)
-
