@@ -1,23 +1,34 @@
-from mtconnect.schema import mtconnect_stream_schema_1_7
+import pathlib
+
 from xsdata.formats.dataclass.parsers import XmlParser
-from mtconnect.schema.mtconnect_stream_schema_1_7.mtconnect_streams_1_7 import MtconnectStreams, EventsType
-from mtconnect.mtstream import MTStream
+
+from mtconnect.schema import mtconnect_stream_schema_1_7
+from mtconnect.schema.mtconnect_stream_schema_1_7.mtconnect_streams_1_7 import (
+    ComponentStreamType,
+    EventsType,
+    MtconnectStreams,
+)
 
 
 class MTStream:
     """
     Class to handle MT data streams
+    Call method "update_tree" to parse an XML file.
     """
 
     MTstream_parser = XmlParser()
+    parser_class = MtconnectStreams
 
-    def __init__(self, xml_filepath):
-        self.xml_filepath = xml_filepath
-        self.update_tree()
-        self.component_stream = self.root.streams.device_stream[1].component_stream
+    def __init__(self):
+        pass
 
-    def update_tree(self):
-        self.root = self.MTstream_parser.parse(self.xml_filepath, MtconnectStreams)
+    def update_tree(self, xml_string_or_filepath: str | pathlib.Path):
+        """
+        Parse an XML file. Takes a string, filepath string, or pathlib.path object and creates self.root
+        """
+        self.xml = xml_string_or_filepath
+        self.root = self.MTstream_parser.parse(self.xml, self.parser_class)
+        self.component_stream: list[ComponentStreamType] = self.root.streams.device_stream[1].component_stream
 
     def find_component_by_component_attribute(self, component_attribute_string: str):
         results = [x for x in self.component_stream if x.component == component_attribute_string]

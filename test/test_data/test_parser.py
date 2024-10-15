@@ -6,6 +6,9 @@ from mtconnect.mtstream import MTStream
 
 if __name__ == "__main__":
     fp = "test/test_data/current.xml"
-    test: MTStream = MTStream(fp)
+    test: MTStream = MTStream()
+    test.update_tree(fp)
+    test.component_stream
     test.return_events()
     print(test)
+
