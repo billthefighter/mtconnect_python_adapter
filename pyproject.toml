@@ -1,0 +1,62 @@
+[tool.poetry]
+name = "mtconnect_python_adapter"
+version = "0.1.0"
+description = "XML interface and python class for reading MTConnect XML files"
+authors = ["Lucas Whipple <lucas.whipple@gmail.com>"]
+readme = "README.md"
+packages = [{include = "*", from="src"}, {include = "generator", from= "src"}]
+
+
+[tool.black]
+target-version = ['py312']
+line-length = 120
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-ra -q --ignore=tests/source_data --cov --cov-report xml"
+testpaths = [
+    "tests/",
+]
+
+[tool.coverage.run]
+branch = true
+relative_files = true
+data_file = "coverage/.coverage"
+
+[tool.coverage.paths]
+source = ["src/",
+        "src\\",]
+
+[tool.coverage.report]
+skip_empty = true
+
+[tool.coverage.xml]
+output = "coverage/coverage.xml"
+
+[tool.coverage.html]
+directory = "coverage/coverage_html_report"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+requests = "^2.32.3"
+lxml = "^5.3.0"
+xsdata = {version = "^24.9", extras = ["cli","lxml","soap"]}
+
+[tool.poetry.group.dev.dependencies]
+black = "*"
+pytest = "^7.4.3"
+flake8 = "*"
+pydot = "*"
+imageio = "*"
+ipympl = "*"
+snakeviz = "*"
+
+
+[tool.poetry.group.test.dependencies]
+pytest = "^7.4.3"
+flake8 = "*"
+pytest-cov = "*"
+
+[build-system]
+requires = ["setuptools","poetry-core"]
+build-backend = "poetry.core.masonry.api"

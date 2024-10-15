@@ -1,0 +1,9 @@
+{
+    "python.testing.pytestArgs": [
+        "${workspaceFolder}/tests"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true,
+    "cSpell.words": [],
+    "black-formatter.importStrategy": "fromEnvironment"
+}
