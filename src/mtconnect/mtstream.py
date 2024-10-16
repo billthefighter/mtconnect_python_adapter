@@ -141,10 +141,10 @@ class MTStream:
         return pathobj.events
 
     def find_type_in_root(self, target_type: Type):
-        return find_all_dataclasses_of_type(self.root, target_type)
+        return find_dataclasses(dataclass_instance=self.root, target_type=target_type)
 
     def find_type_in_component_stream(self, target_type: Type):
-        return find_all_dataclasses_of_type(self.component_stream, target_type)
+        return find_dataclasses(dataclass_instance=self.component_stream, target_type=target_type)
 
     def find_type_in_events(self, target_type: Type):
-        return find_all_dataclasses_of_type(self.return_events(), target_type)
+        return find_dataclasses(dataclass_instance=self.return_events(), target_type=target_type)
