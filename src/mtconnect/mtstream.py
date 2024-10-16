@@ -1,6 +1,6 @@
 import pathlib
 from dataclasses import dataclass, is_dataclass, fields
-from typing import Any, List, Type
+from typing import Any, List, Type, Optional
 
 from xsdata.formats.dataclass.parsers import XmlParser
 
@@ -12,68 +12,95 @@ from mtconnect.schema.mtconnect_stream_schema_1_7.mtconnect_streams_1_7 import (
 )
 
 
-def get_dataclasses_with_attribute(
-    dataclass_instance: Any, attribute_name: str, max_depth: int = 10, current_depth: int = 0
+def find_dataclasses(
+    dataclass_instance: Any,
+    target_type: Optional[Type] = None,
+    attribute_name: Optional[str] = None,
+    attribute_value: Optional[Any] = None,
+    max_depth: int = 10,
+    current_depth: int = 0,
 ) -> List[Any]:
-    # Ensure the instance is a dataclass and the current depth is within the recursion limit
-    if current_depth > max_depth:
-        raise RecursionError(f"Data structure is too deep, max depth exceeds {max_depth} levels")
-    if not is_dataclass(dataclass_instance):
+    """
+    Recursively search through a dataclass and its children to find dataclass instances
+    that match the given criteria.
+
+    The function can match by:
+    - Dataclass type (`target_type`)
+    - Dataclass field name (`attribute_name`)
+    - Dataclass field value (`attribute_value`)
+
+    If `target_type`, `attribute_name`, and `attribute_value` are all provided, only dataclasses
+    matching all those conditions are returned.
+
+    Parameters:
+    - dataclass_instance (Any): The root dataclass instance to search through.
+    - target_type (Optional[Type]): The type of dataclass to search for. Default is None.
+    - attribute_name (Optional[str]): The field name to search for. Default is None.
+    - attribute_value (Optional[Any]): The field value to search for. Default is None.
+    - max_depth (int): The maximum recursion depth. Default is 10.
+    - current_depth (int): The current recursion depth. Internal use only.
+
+    Returns:
+    - List[Any]: A list of matching dataclass instances.
+
+    Raises:
+    - ValueError: If none of `target_type`, `attribute_name`, or `attribute_value` is provided.
+    """
+
+    # Ensure at least one of target_type, attribute_name, or attribute_value is provided
+    if target_type is None and attribute_name is None and attribute_value is None:
+        raise ValueError("At least one of target_type, attribute_name, or attribute_value must be provided.")
+
+    # Ensure the instance is a dataclass and we haven't exceeded the max depth
+    if not is_dataclass(dataclass_instance) or current_depth > max_depth:
         return []
-
-    matched_dataclasses = []
-
-    # Iterate through each field in the dataclass
-    for field in fields(dataclass_instance):
-        # Get the field value from the dataclass instance
-        field_value = getattr(dataclass_instance, field.name)
-
-        # Check if the field has the desired attribute in its metadata
-        if attribute_name in field.metadata:
-            matched_dataclasses.append(dataclass_instance)
-            break
-
-        # If the field itself is a dataclass, recursively check it
-        if is_dataclass(field_value):
-            matched_dataclasses.extend(
-                get_dataclasses_with_attribute(
-                    field_value,
-                    attribute_name,
-                    max_depth,
-                    current_depth + 1,
-                )
-            )
-
-    return matched_dataclasses
-
-
-def find_all_dataclasses_of_type(
-    dataclass_instance: Any, target_type: Type, max_depth: int = 10, current_depth: int = 0
-) -> List[Any]:
-    # Ensure the instance is a dataclass and the current depth is within the recursion limit
-    if current_depth > max_depth:
-        raise RecursionError(f"Data structure is too deep, max depth exceeds {max_depth} levels")
 
     matching_instances = []
 
-    # Check if the current dataclass instance is of the target type
-    if isinstance(dataclass_instance, target_type):
-        matching_instances.append(dataclass_instance)
+    # Check if the dataclass matches all provided conditions
+    type_matches = target_type is None or isinstance(dataclass_instance, target_type)
+    field_name_matches = True  # Default to True if attribute_name is not provided
+    field_value_matches = True  # Default to True if attribute_value is not provided
 
-    # Recursively check all fields for nested dataclasses
     for field in fields(dataclass_instance):
         field_value = getattr(dataclass_instance, field.name)
 
-        # If the field value is a dataclass, search within it
+        # If attribute_name is provided, check if the dataclass has a field with this name
+        if attribute_name is not None:
+            if field.name == attribute_name:
+                field_name_matches = True
+                if attribute_value is not None:
+                    # If attribute_value is provided, check if the field value matches
+                    field_value_matches = field_value == attribute_value
+                else:
+                    field_value_matches = True
+                # If field_name matches, no need to continue checking other fields for this condition
+                break
+            else:
+                field_name_matches = False
+
+        # If attribute_value is provided but attribute_name is not, check all fields for matching value
+        if attribute_name is None and attribute_value is not None:
+            if field_value == attribute_value:
+                field_value_matches = True
+                break
+
+        # If the field itself is a dataclass, search within it recursively
         if is_dataclass(field_value):
             matching_instances.extend(
-                find_all_dataclasses_of_type(
+                find_dataclasses(
                     field_value,
                     target_type,
+                    attribute_name,
+                    attribute_value,
                     max_depth,
                     current_depth + 1,
                 )
             )
+
+    # Add the dataclass instance if all conditions are satisfied
+    if type_matches and field_name_matches and field_value_matches:
+        matching_instances.append(dataclass_instance)
 
     return matching_instances
 
