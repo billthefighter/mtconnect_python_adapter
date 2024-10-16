@@ -62,51 +62,57 @@ def find_dataclasses(
     field_name_matches = True  # Default to True if attribute_name is not provided
     field_value_matches = True  # Default to True if attribute_value is not provided
 
+    # for debugging
+    if type_matches == True:
+        pass
+
     for field in fields(dataclass_instance):
-        field_value = getattr(dataclass_instance, field.name)
+        # Some fields are not initialized - that is, init == False.
+        # For those fields, we need to check if the instance has an attribute or not
+        # TODO: evaluate if try/catch is faster
+        if hasattr(dataclass_instance, field.name):
+            field_value = getattr(dataclass_instance, field.name)
 
-        # If attribute_name is provided, check if the dataclass has a field with this name
-        if attribute_name is not None:
-            if field.name == attribute_name:
-                field_name_matches = True
-                if attribute_value is not None:
-                    # If attribute_value is provided, check if the field value matches
-                    field_value_matches = field_value == attribute_value
+            # If attribute_name is provided, check if the dataclass has a field with this name
+            if attribute_name is not None:
+                if field.name == attribute_name:
+                    field_name_matches = True
+                    if attribute_value is not None:
+                        # If attribute_value is provided, check if the field value matches
+                        field_value_matches = field_value == attribute_value
+                    else:
+                        field_value_matches = True
+                    # If field_name matches, no need to continue checking other fields for this condition
+                    break
                 else:
+                    field_name_matches = False
+
+            # If attribute_value is provided but attribute_name is not, check all fields for matching value
+            if attribute_name is None and attribute_value is not None:
+                if field_value == attribute_value:
                     field_value_matches = True
-                # If field_name matches, no need to continue checking other fields for this condition
-                break
-            else:
-                field_name_matches = False
+                    break
+                else:
+                    field_value_matches = False
 
-        # If attribute_value is provided but attribute_name is not, check all fields for matching value
-        if attribute_name is None and attribute_value is not None:
-            if field_value == attribute_value:
-                field_value_matches = True
-                break
-            else:
-                field_value_matches = False
+            child_instances = []
+            if is_dataclass(field_value):
+                child_instances.append(field_value)
+            elif isinstance(field_value, list) and len(field_value) is not 0:
+                if is_dataclass(field_value[0]):
+                    child_instances.extend(field_value)
 
-        # If the field itself is a dataclass, search within it recursively
-        #TODO: This is broken
-        if not is_dataclass(field_value):
-            continue
-        elif isinstance(field_value, list):
-            if not is_dataclass(field_value[0]):
-                break
-            else: 
-                continue
-        
-        matching_instances.extend(
-            find_dataclasses(
-                field_value,
-                target_type,
-                attribute_name,
-                attribute_value,
-                max_depth,
-                current_depth + 1,
-            )
-        )
+            for child in child_instances:
+                matching_instances.extend(
+                    find_dataclasses(
+                        child,
+                        target_type,
+                        attribute_name,
+                        attribute_value,
+                        max_depth,
+                        current_depth + 1,
+                    )
+                )
 
     # Add the dataclass instance if all conditions are satisfied
     if type_matches and field_name_matches and field_value_matches:

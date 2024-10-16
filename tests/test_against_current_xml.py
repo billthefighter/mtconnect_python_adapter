@@ -19,6 +19,14 @@ def MTStream_fixture():
 def test_find_program_block(MTStream_fixture: MTStream):
     events = MTStream_fixture.return_events()
     result = find_dataclasses(dataclass_instance=events, target_type=Program)
+    assert len(result) == 2
+    assert isinstance(result[0], Program)
+    assert result[0].data_item_id == "activeprog"
+
+
+def test_find_program_block_by_attribute(MTStream_fixture: MTStream):
+    events = MTStream_fixture.return_events()
+    result = find_dataclasses(dataclass_instance=events, target_type=Program, attribute_value="activeprog")
     assert len(result) == 1
-    assert isinstance(result[0], Child)
-    assert result[0].name == "John"
+    assert isinstance(result[0], Program)
+    assert result[0].data_item_id == "activeprog"
