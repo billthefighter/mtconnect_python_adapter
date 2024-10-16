@@ -88,17 +88,25 @@ def find_dataclasses(
                 field_value_matches = False
 
         # If the field itself is a dataclass, search within it recursively
-        if is_dataclass(field_value):
-            matching_instances.extend(
-                find_dataclasses(
-                    field_value,
-                    target_type,
-                    attribute_name,
-                    attribute_value,
-                    max_depth,
-                    current_depth + 1,
-                )
+        #TODO: This is broken
+        if not is_dataclass(field_value):
+            continue
+        elif isinstance(field_value, list):
+            if not is_dataclass(field_value[0]):
+                break
+            else: 
+                continue
+        
+        matching_instances.extend(
+            find_dataclasses(
+                field_value,
+                target_type,
+                attribute_name,
+                attribute_value,
+                max_depth,
+                current_depth + 1,
             )
+        )
 
     # Add the dataclass instance if all conditions are satisfied
     if type_matches and field_name_matches and field_value_matches:
