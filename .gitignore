@@ -7,3 +7,4 @@
 /schema
 /sh
 *pycache*
+*.DS_Store*
