@@ -84,6 +84,8 @@ def find_dataclasses(
             if field_value == attribute_value:
                 field_value_matches = True
                 break
+            else:
+                field_value_matches = False
 
         # If the field itself is a dataclass, search within it recursively
         if is_dataclass(field_value):

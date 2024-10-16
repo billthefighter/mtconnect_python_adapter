@@ -13,7 +13,8 @@ line-length = 120
 
 [tool.pytest.ini_options]
 minversion = "6.0"
-addopts = "-ra -q --ignore=tests/source_data --cov --cov-report xml"
+pythonpath = "src"
+addopts = "-ra -q --ignore=tests/source_data --import-mode=importlib"
 testpaths = [
     "tests/",
 ]
